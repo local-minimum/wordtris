@@ -6,6 +6,12 @@ public class BoardGrid : ReferenceRect
 {
     [Export(PropertyHint.File)]
     public PackedScene gridLabel;
+
+    [Export(PropertyHint.File)]
+    public Theme basicTheme;
+
+    [Export(PropertyHint.File)]
+    public Theme hoverTheme;
     
     public int gridSize = 7;    
     public float spacing = 0.02f;
@@ -81,6 +87,16 @@ public class BoardGrid : ReferenceRect
         {
             var letter = letters.Current;
             field[letter.Coordinates].Text = letter.Character;
+            field[letter.Coordinates].Theme = basicTheme;
+        }
+    }
+    public void DrawHover(IEnumerator<Letter> letters)
+    {
+        while (letters.MoveNext())
+        {
+            var letter = letters.Current;
+            field[letter.Coordinates].Text = letter.Character;
+            field[letter.Coordinates].Theme = hoverTheme;
         }
     }
 }

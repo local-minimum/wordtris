@@ -37,4 +37,8 @@ public class AutodropTimer : Timer
 
         ResetTimeout();
     }
+
+    public float Progress {
+        get { return 1 - TimeLeft / timeoutTime; }
+    }
 }

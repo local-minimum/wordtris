@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://Scripts/PlayField.cs" type="Script" id=1]
 [ext_resource path="res://Prefabs/GridLabel.tscn" type="PackedScene" id=2]
@@ -6,6 +6,9 @@
 [ext_resource path="res://Scripts/PlayerWord.cs" type="Script" id=4]
 [ext_resource path="res://Fonts/cabalBold.tres" type="DynamicFont" id=5]
 [ext_resource path="res://Scenes/AutodropTimer.cs" type="Script" id=6]
+[ext_resource path="res://BasicTheme.tres" type="Theme" id=7]
+[ext_resource path="res://HoverTheme.tres" type="Theme" id=8]
+[ext_resource path="res://Scenes/DropProgress.cs" type="Script" id=9]
 
 [node name="PlayField" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -22,6 +25,8 @@ border_color = Color( 0.968627, 0.0666667, 0, 1 )
 border_width = 1.2
 script = ExtResource( 3 )
 gridLabel = ExtResource( 2 )
+basicTheme = ExtResource( 7 )
+hoverTheme = ExtResource( 8 )
 
 [node name="PlayerWord" type="Node" parent="."]
 script = ExtResource( 4 )
@@ -31,7 +36,7 @@ anchor_right = 0.992
 anchor_bottom = 0.15
 margin_right = 4.79999
 custom_fonts/font = ExtResource( 5 )
-text = "XXXXXX"
+text = "WordTris"
 align = 1
 valign = 1
 
@@ -46,3 +51,12 @@ autowrap = true
 
 [node name="AutodropTimer" type="Timer" parent="."]
 script = ExtResource( 6 )
+FirstLevelTimeout = 6.0
+LevelDecay = 0.95
+resetsPerLevel = 15
+
+[node name="DropProgress" type="ColorRect" parent="."]
+anchor_top = 0.136
+anchor_right = 1.0
+anchor_bottom = 0.15
+script = ExtResource( 9 )

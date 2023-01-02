@@ -102,7 +102,7 @@ public class PlayerWord : Node
     }
 
     public IEnumerator<Letter> Letters() {
-        for (int i = 0, l = Word.Length; i<l; i++)
+        for (int i = 0, l = Word?.Length ?? 0; i<l; i++)
         {
             var coordinates = extent.Interpolate(anchor, i);
             yield return new Letter(coordinates, Word.Substr(i, 1));
@@ -131,7 +131,7 @@ public class PlayerWord : Node
 
     public void Normalize(int fieldSize)
     {
-        if (word.Length == 0)
+        if (string.IsNullOrEmpty(word))
         {
             dirty = false;
             return;

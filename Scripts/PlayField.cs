@@ -56,11 +56,16 @@ public class PlayField : CanvasLayer
 		Timer.Start();
 		
 		LetterGrid = new string[BoardGrid.gridSize, BoardGrid.gridSize];
-
-		NewPlayerWord();		
 	}
 
-	private bool noFirstAutodrop = true;
+	private bool _noFirstAutodrop = true;
+	private bool noFirstAutodrop { 
+		get { return _noFirstAutodrop; }
+		set {
+			_noFirstAutodrop = false;
+			GetNode<DropProgress>("DropProgress").timer = Timer;
+		}
+	}
 
 	private void OnAutodrop()
     {
@@ -82,6 +87,7 @@ public class PlayField : CanvasLayer
 			PlayerWord.Word = "";
 			WordList.Text = "GAME OVER!";
 			playing = false;
+			GetNode<DropProgress>("DropProgress").GameOver();
 		}
 	}
 
@@ -251,6 +257,8 @@ public class PlayField : CanvasLayer
 
 	void ScoreWords(List<Coordinates2D> range)
     {
+		if (range.Count == 0) return;
+
 		int minLength = 3;
 		List<Extent2D> wordCoords = new List<Extent2D>();
 		List<string> words = new List<string>();
@@ -364,6 +372,6 @@ public class PlayField : CanvasLayer
 
 		BoardGrid.ClearField();
 		BoardGrid.DrawField(Letters);
-		BoardGrid.DrawField(PlayerWord.Letters());
+		BoardGrid.DrawHover(PlayerWord.Letters());
     }
 }
