@@ -7,7 +7,7 @@ public class BoardGrid : ReferenceRect
     [Export(PropertyHint.File)]
     public PackedScene gridLabel;
     
-    public int gridSize = 6;    
+    public int gridSize = 7;    
     public float spacing = 0.02f;
     public float padding = 0.0f;
 
@@ -17,7 +17,7 @@ public class BoardGrid : ReferenceRect
     {
         get
         {
-            return new Coordinates2D(gridSize / 2 - 1, gridSize / 2 - 1);
+            return new Coordinates2D(gridSize / 2, gridSize / 2);
         }
     }
 
