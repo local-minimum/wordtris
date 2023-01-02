@@ -8,6 +8,9 @@ using LanguageTools;
 
 public class PlayField : CanvasLayer
 {
+    [Export(PropertyHint.None)]
+	public bool debugWords = true;
+
 	public string resource = "wordlist.tres";
 
 	private HashSet<string> lexicon = new HashSet<string>();
@@ -23,13 +26,14 @@ public class PlayField : CanvasLayer
 	private Label Message;
 	private Label WordList;
 	private AutodropTimer Timer;
+	private DropProgress DropProgress;
+	private Label NextWord;
 
 	private string[,] LetterGrid;
 
 	int score = 0;
 	private bool playing = true;
 
-	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
 	{
 		GD.Randomize();
@@ -51,19 +55,31 @@ public class PlayField : CanvasLayer
 		Message = GetNode<Label>("Message");
 		WordList = GetNode<Label>("WordList");
 		Timer = GetNode<AutodropTimer>("AutodropTimer");
-		Timer.Connect("timeout", this, "OnAutodrop");
+		DropProgress = GetNode<DropProgress>("DropProgress");
+		NextWord = GetNode<Label>("NextWord");
 
+		Timer.Connect("timeout", this, "OnAutodrop");
 		Timer.Start();
 		
 		LetterGrid = new string[BoardGrid.gridSize, BoardGrid.gridSize];
+
+		SetNextWord();
+
+		//Message.Text = wordList.Contains("toe").ToString();
 	}
+
+	void SetNextWord()
+    {
+		nextWord = RandomGram;
+		NextWord.Text = $"NEXT: {nextWord}";
+    }
 
 	private bool _noFirstAutodrop = true;
 	private bool noFirstAutodrop { 
 		get { return _noFirstAutodrop; }
 		set {
 			_noFirstAutodrop = false;
-			GetNode<DropProgress>("DropProgress").timer = Timer;
+			DropProgress.timer = Timer;
 		}
 	}
 
@@ -87,14 +103,17 @@ public class PlayField : CanvasLayer
 			PlayerWord.Word = "";
 			WordList.Text = "GAME OVER!";
 			playing = false;
-			GetNode<DropProgress>("DropProgress").GameOver();
+			DropProgress.GameOver();
 		}
 	}
 
+	private string nextWord;
+
 	private void NewPlayerWord()
     {
-		PlayerWord.Word = RandomGram;
+		PlayerWord.Word = nextWord;
 		PlayerWord.Anchor = BoardGrid.center;
+		SetNextWord();
 	}
 
 	public string RandomGram
@@ -258,9 +277,11 @@ public class PlayField : CanvasLayer
 	void ScoreWords(List<Coordinates2D> range)
     {
 		if (range.Count == 0) return;
-
+		
 		int minLength = 3;
+
 		List<Extent2D> wordCoords = new List<Extent2D>();
+		List<string> candidates = new List<string>();
 		List<string> words = new List<string>();
 
 		// Orthogonals
@@ -271,6 +292,8 @@ public class PlayField : CanvasLayer
 			var candidate = horizontal ? VerticalCandidate(coords) : HorizontalCandidate(coords);
 
 			if (String.IsNullOrEmpty(candidate.candidate)) continue;
+
+			if (debugWords) candidates.Add(candidate.candidate);
 
 			var word = LongestWordAround(candidate.candidate, candidate.anchor, minLength);
 			if (String.IsNullOrEmpty(word)) continue;
@@ -296,6 +319,8 @@ public class PlayField : CanvasLayer
 
 		if (!String.IsNullOrEmpty(rangeCandidate.candidate))
         {
+			if (debugWords) candidates.Add(rangeCandidate.candidate);
+
 			var rangeWord = LongestWordAroundRange(rangeCandidate.candidate, rangeCandidate.anchor, rangeCandidate.anchor + range.Count(), minLength);
 
 			if (!String.IsNullOrEmpty(rangeWord))
@@ -316,15 +341,16 @@ public class PlayField : CanvasLayer
 				words.Add(rangeWord);
 			}
 		}
-		
 
-		// Clear it formed words
+
+		// Clear it formed words and score
+		int roundScore = 0;
 		var anchor = Coordinates2D.Zero;
 		for (int i = 0, l = wordCoords.Count(); i < l; i++)
         {
 			var word = wordCoords[i];
 
-			score += ScoreWord(word.Length);
+			roundScore += ScoreWord(word.Length);
 
 			for (int j = 0, k = word.Length; j<k; j++)
             {
@@ -333,13 +359,25 @@ public class PlayField : CanvasLayer
             }
         }
 
+		roundScore *= wordCoords.Count();
+		score += roundScore;
+
 		Message.Text = $"Score: {score}";
 		var scoredWords = words.OrderBy(w => -w.Length).Select(w => $"{ScoreWord(w.Length)}: {w}");
 		WordList.Text = $"{String.Join(", ", scoredWords)}";
+		if (roundScore > 0 && wordCoords.Count() > 1)
+        {
+			WordList.Text += $"\nMultiplier: x{wordCoords.Count()}!";
+        }
+		if (debugWords)
+        {
+			WordList.Text += $"\n{String.Join("/", candidates)}";
+        }
     }
 
 	private void Drop()
     {
+		PlayerWord.Normalize(BoardGrid.gridSize);
 		var range = PlaceLettes(PlayerWord.Letters());
 		ScoreWords(range);
 		NewPlayerWord();

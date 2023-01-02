@@ -12,6 +12,9 @@ public class BoardGrid : ReferenceRect
 
     [Export(PropertyHint.File)]
     public Theme hoverTheme;
+
+    [Export(PropertyHint.File)]
+    public Theme hoverCollideTheme;
     
     public int gridSize = 7;    
     public float spacing = 0.02f;
@@ -95,8 +98,9 @@ public class BoardGrid : ReferenceRect
         while (letters.MoveNext())
         {
             var letter = letters.Current;
+            var previouslyEmpty = String.IsNullOrEmpty(field[letter.Coordinates].Text);
             field[letter.Coordinates].Text = letter.Character;
-            field[letter.Coordinates].Theme = hoverTheme;
+            field[letter.Coordinates].Theme = previouslyEmpty ? hoverTheme : hoverCollideTheme;
         }
     }
 }

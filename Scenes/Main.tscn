@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=2]
+[gd_scene load_steps=12 format=2]
 
 [ext_resource path="res://Scripts/PlayField.cs" type="Script" id=1]
 [ext_resource path="res://Prefabs/GridLabel.tscn" type="PackedScene" id=2]
@@ -9,6 +9,8 @@
 [ext_resource path="res://BasicTheme.tres" type="Theme" id=7]
 [ext_resource path="res://HoverTheme.tres" type="Theme" id=8]
 [ext_resource path="res://Scenes/DropProgress.cs" type="Script" id=9]
+[ext_resource path="res://Fonts/cabalSmall.tres" type="DynamicFont" id=10]
+[ext_resource path="res://HoverCollideTheme.tres" type="Theme" id=11]
 
 [node name="PlayField" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -27,6 +29,7 @@ script = ExtResource( 3 )
 gridLabel = ExtResource( 2 )
 basicTheme = ExtResource( 7 )
 hoverTheme = ExtResource( 8 )
+hoverCollideTheme = ExtResource( 11 )
 
 [node name="PlayerWord" type="Node" parent="."]
 script = ExtResource( 4 )
@@ -43,15 +46,14 @@ valign = 1
 [node name="WordList" type="Label" parent="."]
 anchor_left = 0.008
 anchor_top = 0.8
-anchor_right = 0.662
+anchor_right = 0.555
 anchor_bottom = 1.0
 margin_left = -4.8
-margin_right = -0.200043
 autowrap = true
 
 [node name="AutodropTimer" type="Timer" parent="."]
 script = ExtResource( 6 )
-FirstLevelTimeout = 6.0
+FirstLevelTimeout = 10.0
 LevelDecay = 0.95
 resetsPerLevel = 15
 
@@ -60,3 +62,16 @@ anchor_top = 0.136
 anchor_right = 1.0
 anchor_bottom = 0.15
 script = ExtResource( 9 )
+
+[node name="NextWord" type="Label" parent="."]
+anchor_left = 0.705
+anchor_top = 0.8
+anchor_right = 1.0
+anchor_bottom = 0.87
+margin_left = -3.05176e-05
+margin_bottom = -6.10352e-05
+custom_fonts/font = ExtResource( 10 )
+text = "Next: FAX"
+valign = 1
+autowrap = true
+uppercase = true
