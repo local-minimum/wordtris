@@ -48,7 +48,7 @@ public class PlayerWord : Node
     private Coordinates2D anchor;
     private Extent2D extent;
     private bool mayRotate;
-    private bool dirty = true;
+    private bool dirty = true;    
 
     public bool Dirty
     {
@@ -131,6 +131,12 @@ public class PlayerWord : Node
 
     public void Normalize(int fieldSize)
     {
+        if (word.Length == 0)
+        {
+            dirty = false;
+            return;
+        }
+
         ClampAnchorFromExtentEdge(extent.Interpolate(anchor, 0), fieldSize);
         ClampAnchorFromExtentEdge(extent.Interpolate(anchor, word.Length - 1), fieldSize);
 

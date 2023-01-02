@@ -22,10 +22,12 @@ public class PlayField : CanvasLayer
 	private BoardGrid BoardGrid;
 	private Label Message;
 	private Label WordList;
+	private AutodropTimer Timer;
 
 	private string[,] LetterGrid;
 
 	int score = 0;
+	private bool playing = true;
 
 	// Called when the node enters the scene tree for the first time.
 	public override void _Ready()
@@ -48,10 +50,39 @@ public class PlayField : CanvasLayer
 		PlayerWord = GetNode<PlayerWord>("PlayerWord");
 		Message = GetNode<Label>("Message");
 		WordList = GetNode<Label>("WordList");
+		Timer = GetNode<AutodropTimer>("AutodropTimer");
+		Timer.Connect("timeout", this, "OnAutodrop");
 
+		Timer.Start();
+		
 		LetterGrid = new string[BoardGrid.gridSize, BoardGrid.gridSize];
 
 		NewPlayerWord();		
+	}
+
+	private bool noFirstAutodrop = true;
+
+	private void OnAutodrop()
+    {
+		if (noFirstAutodrop)
+        {
+			noFirstAutodrop = false;
+			return;
+        }
+
+		if (!playing) return;
+
+		try
+		{
+			Drop();
+			Timer.ResetTimer();
+		}
+		catch (LetterCollisionException)
+		{
+			PlayerWord.Word = "";
+			WordList.Text = "GAME OVER!";
+			playing = false;
+		}
 	}
 
 	private void NewPlayerWord()
@@ -126,6 +157,8 @@ public class PlayField : CanvasLayer
 				throw new LetterCollisionException();
 			}
 		}
+
+		Timer.ResetTimer();
 
 		return letterList.Select(letter => letter.Coordinates).ToList();
     }
@@ -297,15 +330,23 @@ public class PlayField : CanvasLayer
 		WordList.Text = $"{String.Join(", ", scoredWords)}";
     }
 
-    public override void _Input(InputEvent @event)
+	private void Drop()
     {
+		var range = PlaceLettes(PlayerWord.Letters());
+		ScoreWords(range);
+		NewPlayerWord();
+	}
+
+	public override void _Input(InputEvent @event)
+    {
+		noFirstAutodrop = false;
+		if (!playing) return;
+
         if (@event.IsActionPressed("Drop"))
         {
 			try
             {
-				var range = PlaceLettes(PlayerWord.Letters());
-				ScoreWords(range);
-				NewPlayerWord();
+				Drop();
 			}
 			catch (LetterCollisionException)
             {

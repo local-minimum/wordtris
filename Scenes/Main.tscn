@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://Scripts/PlayField.cs" type="Script" id=1]
 [ext_resource path="res://Prefabs/GridLabel.tscn" type="PackedScene" id=2]
 [ext_resource path="res://Scripts/BoardGrid.cs" type="Script" id=3]
 [ext_resource path="res://Scripts/PlayerWord.cs" type="Script" id=4]
 [ext_resource path="res://Fonts/cabalBold.tres" type="DynamicFont" id=5]
+[ext_resource path="res://Scenes/AutodropTimer.cs" type="Script" id=6]
 
 [node name="PlayField" type="CanvasLayer"]
 script = ExtResource( 1 )
@@ -42,3 +43,6 @@ anchor_bottom = 1.0
 margin_left = -4.8
 margin_right = -0.200043
 autowrap = true
+
+[node name="AutodropTimer" type="Timer" parent="."]
+script = ExtResource( 6 )
