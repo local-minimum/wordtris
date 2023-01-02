@@ -26,12 +26,20 @@ public struct Extent2D
         this.maxY = maxY;
     }
 
+    public Extent2D(Coordinates2D start, Coordinates2D end)
+    {
+        minX = start.X;
+        maxX = end.X;
+        minY = start.Y;
+        maxY = end.Y;
+    }
+
     public Extent2D Rotate(Rotation rotation)
     {
         switch (rotation)
         {
-            case Rotation.CW90: return new Extent2D(minY, maxY, -minX, -maxX);
-            case Rotation.CCW90: return new Extent2D(-minY, -maxY, minX, maxX);
+            case Rotation.CCW90: return new Extent2D(minY, maxY, -minX, -maxX);
+            case Rotation.CW90: return new Extent2D(-minY, -maxY, minX, maxX);
             default: return new Extent2D(minX, maxX, minY, maxY);
         }
     }
@@ -49,6 +57,14 @@ public struct Extent2D
             anchor.X + minX + offset * Math.Sign(maxX - minX),
             anchor.Y + minY + offset * Math.Sign(maxY - minY)
         );
+    }
+
+    public int Length
+    {
+        get
+        {
+            return Math.Abs(maxX - minX) + Math.Abs(maxY - minY);
+        }
     }
 
     public override string ToString() => $"<{minX}-{maxX}, {minY}-{maxY}>";

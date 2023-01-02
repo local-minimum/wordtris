@@ -35,6 +35,11 @@ public struct Coordinates2D
         get { return new Coordinates2D(-1, 0); }
     }
 
+    public static Coordinates2D Zero
+    {
+        get { return new Coordinates2D(0, 0); }
+    }
+
     public Coordinates2D Clamp(Coordinates2D size)
     {
         return new Coordinates2D(Math.Max(Math.Min(size.X, X), 0), Math.Max(Math.Min(size.Y, Y), 0));
@@ -42,6 +47,9 @@ public struct Coordinates2D
 
     public static Coordinates2D operator +(Coordinates2D a, Coordinates2D b) => new Coordinates2D(a.X + b.X, a.Y + b.Y);
     public static Coordinates2D operator -(Coordinates2D a, Coordinates2D b) => new Coordinates2D(a.X - b.X, a.Y - b.Y);
+
+    public static Coordinates2D operator *(Coordinates2D a, int b) => new Coordinates2D(a.X * b, a.Y * b);
+    public static Coordinates2D operator *(int a, Coordinates2D b) => new Coordinates2D(b.X * a, b.Y * a);    
 
     public static bool operator ==(Coordinates2D a, Coordinates2D b) => a.X == b.X && a.Y == b.Y;
     public static bool operator !=(Coordinates2D a, Coordinates2D b) => a.X != b.X || a.Y != b.Y;

@@ -67,7 +67,7 @@ public class BoardGrid : ReferenceRect
         }        
     }
 
-    void ClearField()
+    public void ClearField()
     {
         foreach (var entry in field)
         {
@@ -77,7 +77,6 @@ public class BoardGrid : ReferenceRect
 
     public void DrawField(IEnumerator<Letter> letters)
     {
-        ClearField();
         while (letters.MoveNext())
         {
             var letter = letters.Current;

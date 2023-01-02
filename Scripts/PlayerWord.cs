@@ -4,6 +4,7 @@ using System.Collections.Generic;
 public class PlayerWord : Node
 {
     private string word;
+
     public string Word {
         get
         {
@@ -40,17 +41,26 @@ public class PlayerWord : Node
                     extent = new Extent2D(0, offset);
                 }
             }
+
+            dirty = true;
         }
     }
     private Coordinates2D anchor;
     private Extent2D extent;
     private bool mayRotate;
+    private bool dirty = true;
+
+    public bool Dirty
+    {
+        get { return dirty; }
+    }
 
     public Coordinates2D Anchor
     {
         set
         {
             anchor = value;
+            dirty = true;
         }
     }
 
@@ -59,29 +69,35 @@ public class PlayerWord : Node
         if (@event.IsActionPressed("Up"))
         {
             anchor += Coordinates2D.Up;
+            dirty = true;
         }
 
         if (@event.IsActionPressed("Down"))
         {
             anchor += Coordinates2D.Down;
+            dirty = true;
         }
 
         if (@event.IsActionPressed("Left"))
         {
             anchor += Coordinates2D.Left;
+            dirty = true;
         }
 
         if (@event.IsActionPressed("Right"))
         {
             anchor += Coordinates2D.Right;
+            dirty = true;
         }
         if (mayRotate && @event.IsActionPressed("RotateCW"))
         {
             extent = extent.Rotate(Extent2D.Rotation.CW90);
+            dirty = true;
         }
         if (mayRotate && @event.IsActionPressed("RotateCCW"))
         {
             extent = extent.Rotate(Extent2D.Rotation.CCW90);
+            dirty = true;
         }
     }
 
@@ -91,5 +107,33 @@ public class PlayerWord : Node
             var coordinates = extent.Interpolate(anchor, i);
             yield return new Letter(coordinates, Word.Substr(i, 1));
         }
+    }
+
+    private void ClampAnchorFromExtentEdge(Coordinates2D coords, int fieldSize)
+    {
+        if (coords.X < 0)
+        {
+            anchor += Coordinates2D.Right * -coords.X;
+        }
+        else if (coords.X >= fieldSize)
+        {
+            anchor += Coordinates2D.Left * (1 + coords.X - fieldSize);
+        }
+        if (coords.Y < 0)
+        {
+            anchor += Coordinates2D.Down * -coords.Y;
+        }
+        else if (coords.Y >= fieldSize)
+        {
+            anchor += Coordinates2D.Up * (1 + coords.Y - fieldSize);
+        }
+    }
+
+    public void Normalize(int fieldSize)
+    {
+        ClampAnchorFromExtentEdge(extent.Interpolate(anchor, 0), fieldSize);
+        ClampAnchorFromExtentEdge(extent.Interpolate(anchor, word.Length - 1), fieldSize);
+
+        dirty = false;
     }
 }
