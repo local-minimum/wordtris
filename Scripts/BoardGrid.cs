@@ -80,7 +80,7 @@ public class BoardGrid : ReferenceRect
     {
         foreach (var entry in field)
         {
-            entry.Value.Text = "";
+            entry.Value.RemoveValue();
         }
     }
 
@@ -89,7 +89,7 @@ public class BoardGrid : ReferenceRect
         while (letters.MoveNext())
         {
             var letter = letters.Current;
-            field[letter.Coordinates].Text = letter.Character;
+            field[letter.Coordinates].SetValue(letter.Character, false);
             field[letter.Coordinates].Theme = basicTheme;
         }
     }
@@ -98,8 +98,8 @@ public class BoardGrid : ReferenceRect
         while (letters.MoveNext())
         {
             var letter = letters.Current;
-            var previouslyEmpty = String.IsNullOrEmpty(field[letter.Coordinates].Text);
-            field[letter.Coordinates].Text = letter.Character;
+            var previouslyEmpty = field[letter.Coordinates].IsFree;
+            field[letter.Coordinates].SetValue(letter.Character, true);
             field[letter.Coordinates].Theme = previouslyEmpty ? hoverTheme : hoverCollideTheme;
         }
     }

@@ -1,7 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-
+using System.Text;
 
 namespace LanguageTools
 {
@@ -107,6 +108,20 @@ namespace LanguageTools
                     if (end == first) break;
                 }
             }
+        }
+
+        public static List<string> LoadResource(this string resource)
+        {
+            string rawContents;
+            using (StreamReader streamReader = new StreamReader(resource, Encoding.UTF8))
+            {
+                rawContents = streamReader.ReadToEnd();
+            }
+            return rawContents
+                .Split(new string[] { "\n" }, StringSplitOptions.None)
+                .Select(x => x.Trim())
+                .Where(x => x.Length > 0)
+                .ToList();
         }
     }
 }
