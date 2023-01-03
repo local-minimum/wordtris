@@ -10,3 +10,6 @@ data_*/
 
 # Visual Studio Code
 .vs/
+
+# Godot-Builds
+/[Bb]uild[s]
