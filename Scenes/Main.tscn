@@ -57,8 +57,8 @@ autowrap = true
 [node name="AutodropTimer" type="Timer" parent="."]
 script = ExtResource( 6 )
 FirstLevelTimeout = 10.0
-LevelDecay = 0.95
-resetsPerLevel = 15
+LevelDecay = 0.8
+resetsPerLevel = 12
 betweenTime = 0.3
 
 [node name="DropProgress" type="ColorRect" parent="."]

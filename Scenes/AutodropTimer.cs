@@ -13,7 +13,7 @@ public class AutodropTimer : Timer
     float betweenTime = 0.5f;
 
     bool betweenTimer = false;
-
+    int level = 1;
     int resets = 0;
     float timeoutTime;
 
@@ -35,6 +35,7 @@ public class AutodropTimer : Timer
             {
                 resets = 0;
                 timeoutTime *= LevelDecay;
+                level++;
             }
         }
 
@@ -62,6 +63,14 @@ public class AutodropTimer : Timer
             if (betweenTimer) return 0;
 
             return 1 - TimeLeft / timeoutTime;         
+        }
+    }
+
+    public int Level
+    {
+        get
+        {
+            return level;
         }
     }
 

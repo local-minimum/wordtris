@@ -75,6 +75,29 @@ class VirtualBoard
 			}
 		}
 	}
+
+	public int Coverage
+    {
+		get
+        {
+			int coverage = 0;
+			for (var x = 0; x < LetterGrid.GetLength(0); x++)
+			{
+				for (var y = 0; y < LetterGrid.GetLength(1); y++)
+				{
+					var character = LetterGrid[x, y];
+					if (!String.IsNullOrEmpty(character))
+					{
+						coverage++;
+					}
+				}
+			}
+			return coverage;
+
+		}
+	}
+
+
 	public WordCandidate VerticalCandidate(Coordinates2D coordinates)
 	{		
 		var x = coordinates.X;

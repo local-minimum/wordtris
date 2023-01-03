@@ -25,6 +25,7 @@ public class PlayField : CanvasLayer
 	int minWordLength = 3;
 	int score = 0;
 	private bool playing = true;
+	private bool eligableForBonus = false;
 
 	public override void _Ready()
 	{
@@ -95,7 +96,7 @@ public class PlayField : CanvasLayer
 		SetNextWord();
 	}
 
-	public int ScoreWord(int wordLength) => Mathf.RoundToInt(Mathf.Pow(2, wordLength));
+	public int ScoreWord(int wordLength) => Mathf.RoundToInt(Mathf.Pow(2, wordLength + Timer.Level - 2));
 
 	int ScoreWords(List<Coordinates2D> range)
     {
@@ -168,27 +169,42 @@ public class PlayField : CanvasLayer
 			virtualBoard.Clear(wordExtent);
         }
 
-		// Multiplier
-		roundScore *= words.Count();
+		// Bonus
+		int bonus = 0;
+		if (eligableForBonus && virtualBoard.Coverage == 0)
+        {
+			bonus = 100;
+			roundScore += bonus;
+			eligableForBonus = false;
+        } else if (virtualBoard.Coverage > 0) {
+			eligableForBonus = true;
+		}
+
+		// Multipier
+		int multiplier = words.Count();
+		roundScore *= multiplier;
 
 		// Sum up
 		score += roundScore;
 
 		// Display stuff
 		Message.Text = $"Score: {score}";
-		UpdateWordList(words, roundScore, candidates);
+		UpdateWordList(words, roundScore, candidates, bonus, multiplier);
 
 		return roundScore;
     }
 
-	private void UpdateWordList(List<string> words, int roundScore, List<string> candidates)
-    {
-		var nWords = words.Count();
+	private void UpdateWordList(List<string> words, int roundScore, List<string> candidates, int bonus, int multiplier)
+    {		
 		var scoredWords = words.OrderBy(w => -w.Length).Select(w => $"{ScoreWord(w.Length)}:\u00A0{w}");
 		WordList.Text = $"{String.Join(", ", scoredWords)}";
-		if (roundScore > 0 && nWords > 1)
+		if (bonus > 0)
 		{
-			WordList.Text += $"\nMultiplier: x{nWords}!";
+			WordList.Text += $"\nBonus: +{bonus}";
+		}
+		if (roundScore > 0 && multiplier > 1)
+		{
+			WordList.Text += $"\nMultiplier: x{multiplier}!";
 		}
 		if (debugWords)
 		{
