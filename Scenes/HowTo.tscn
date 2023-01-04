@@ -35,7 +35,9 @@ Higher levels give more points but  make blocks drop faster.
 
 You can pause with P / Pause.
 
-You can restart by holding R for one second."
+You can restart by holding R for one second.
+
+If you want to give up but want the score, simply drop the block ontop of some existing letters."
 text = "How to play
 Move block with arrows or WASD
 
@@ -49,7 +51,9 @@ Higher levels give more points but  make blocks drop faster.
 
 You can pause with P / Pause.
 
-You can restart by holding R for one second."
+You can restart by holding R for one second.
+
+If you want to give up but want the score, simply drop the block ontop of some existing letters."
 
 [node name="CloseButton" type="Button" parent="."]
 anchor_left = 1.0

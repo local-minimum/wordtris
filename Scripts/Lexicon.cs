@@ -19,7 +19,7 @@ namespace LanguageTools
         {
             get
             {
-                return bigrams != null;
+                return trigrams != null;
             }
         }
 
@@ -49,7 +49,6 @@ namespace LanguageTools
             wordList.CreateGrams(trigramsDict, 3);
             bigrams = new GramBag(bigramsDict);
             trigrams = new GramBag(trigramsDict);
-
         }
 
         public static string RandomGram
