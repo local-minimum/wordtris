@@ -6,7 +6,7 @@ namespace GodotHelpers
 {
     static class LoadTextResource
     {
-        public static string Load(string resourcePath)
+        public static File Load(string resourcePath)
         {
             if (resourcePath == null) throw new ArgumentNullException("Resource path cannot be null");
 
@@ -15,11 +15,14 @@ namespace GodotHelpers
                 resourcePath = $"res://{resourcePath}";
             }
 
-            GD.Print($"Loading \"{resourcePath}\", remember to include this is Export > Resources > Export non-resource files");
+            if (OS.IsDebugBuild())
+            {
+                GD.Print($"Loading \"{resourcePath}\", remember to include this is Export > Resources > Export non-resource files");
+            }
 
             var f = new File();
             f.Open(resourcePath, File.ModeFlags.Read);
-            return f.GetAsText();
+            return f;
         }
     }
 }

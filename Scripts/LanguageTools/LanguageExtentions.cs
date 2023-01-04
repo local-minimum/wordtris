@@ -7,18 +7,27 @@ namespace LanguageTools
 {
     public static class LanguageExtentions
     {
-        public static List<string> CreateGrams(this List<string> wordList, Dictionary<string, int> grams, int gramSize = 2) {
-            if (gramSize < 1) { return wordList; }
+        private static int batchSize = 10000;
 
-            List<string> discardedWord = new List<string>();
+        public static IEnumerator<Dictionary<string, int>> CreateGrams(this IEnumerable<string> wordList, Dictionary<string, int> grams, int gramSize = 2)
+        {
+            if (gramSize < 1) {
+                yield return grams;
+                yield break;
+            }
 
-            for (int i = 0, l = wordList.Count; i < l; i++)
-            {
-                var word = wordList[i];
+            int batch = 0;
+            foreach (var word in wordList)
+            {             
+                batch++;
+                if (batch >= batchSize)
+                {
+                    batch = 0;
+                    yield return null;
+                }
 
                 if (word.Length < gramSize)
                 {
-                    discardedWord.Add(word);
                     continue;
                 }
 
@@ -37,7 +46,7 @@ namespace LanguageTools
                 }
             }
 
-            return discardedWord;
+            yield return grams;
         }
 
         public static string DebugContent<K, V>(this Dictionary<K, V> store, int maxLength = -1)
@@ -114,7 +123,6 @@ namespace LanguageTools
             return resource
                 .Split(new string[] { "\n" }, StringSplitOptions.None)
                 .Select(x => x.Trim())
-                .Where(x => x.Length > 0)
                 .ToList();
         }
     }

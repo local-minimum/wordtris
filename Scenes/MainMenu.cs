@@ -4,47 +4,43 @@ using LanguageTools;
 public class MainMenu : Control
 {
     Button PlayButton;
-    Button HowToButton;    
 
     public string resource = "res://wordlist.txt";
 
-    Thread loadThread;
-
+    
     private void loadLexicon()
     {
-        if (!Lexicon.Initizialized)
+        if (!Lexicon.Loaded)
         {
-            var resourceData = GodotHelpers.LoadTextResource.Load(resource);
-            Lexicon.Init(resourceData, 7);
+            GD.Print($"Loading lexicon from: {resource}");
+            var resourceFile = GodotHelpers.LoadTextResource.Load(resource);
+            Lexicon.Init(resourceFile, 7);
         }
-
-        GetNode<Label>("LoadingLabel").Visible = false;
     }
 
     public override void _Ready()
     {
         PlayButton = GetNode<Button>("PlayButton");
         PlayButton.Disabled = true;
-        HowToButton = GetNode<Button>("HowToButton");
-        HowToButton.Disabled = true;        
 
-        loadThread = new Thread();
-        loadThread.Start(this, "loadLexicon");
+        loadLexicon();
     }
 
     public override void _Process(float delta)
     {
-        if (PlayButton.Disabled && Lexicon.Initizialized)
+        if (Lexicon.Inizializing)
+        {
+            GetNode<Label>("LoadingLabel").Text = Lexicon.InitStatus;
+            Lexicon.LoadBatch();
+            return;
+        }
+
+        if (PlayButton.Disabled && Lexicon.Loaded)
         {
             PlayButton.Disabled = false;
-            HowToButton.Disabled = false;
+
+            GetNode<Label>("LoadingLabel").Visible = false;
+            GD.Print("Lexicon loaded");
         }
-    }
-
-    protected override void Dispose(bool disposing)
-    {
-        loadThread?.WaitToFinish();
-
-        base.Dispose(disposing);
     }
 }

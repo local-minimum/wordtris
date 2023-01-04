@@ -47,7 +47,7 @@ public class PlayField : CanvasLayer
 		PauseScreen.Visible = false;
 		AddChild(PauseScreen);
 
-		if (!Lexicon.Initizialized)
+		if (!Lexicon.Loaded)
         {
 			var resourceData = GodotHelpers.LoadTextResource.Load(resource);
 			Lexicon.Init(resourceData, BoardGrid.gridSize);
