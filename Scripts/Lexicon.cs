@@ -4,18 +4,26 @@ using Godot;
 
 namespace LanguageTools
 {
-    class Lexicon
+    static class Lexicon
     {
-        private HashSet<string> lexicon = new HashSet<string>();
+        static private HashSet<string> lexicon = new HashSet<string>();
 
-        private int TriToBiRatio = 3;
+        static private int TriToBiRatio = 3;
 
-        private GramBag bigrams;
-        private GramBag trigrams;
+        static private GramBag bigrams;
+        static private GramBag trigrams;
 
-        private RandomNumberGenerator RNG;
+        static private RandomNumberGenerator RNG;
 
-        public int Size
+        public static bool Initizialized
+        {
+            get
+            {
+                return bigrams != null;
+            }
+        }
+
+        public static int Size
         {
             get
             {
@@ -23,7 +31,7 @@ namespace LanguageTools
             }
         }
 
-        public Lexicon(string resourceData, int maxLength)
+        public static void Init(string resourceData, int maxLength)
         {
             RNG = new RandomNumberGenerator();
             RNG.Randomize();
@@ -44,7 +52,7 @@ namespace LanguageTools
 
         }
 
-        public string RandomGram
+        public static string RandomGram
         {
             get
             {
@@ -56,7 +64,7 @@ namespace LanguageTools
             }
         }
 
-        public string LongestWordAround(string input, int newCharacterPosition, int minLength = 2)
+        public static string LongestWordAround(string input, int newCharacterPosition, int minLength = 2)
         {
             return input
                 .ToUpper()
@@ -66,7 +74,7 @@ namespace LanguageTools
                 .FirstOrDefault();
         }
 
-        public string LongestWordAroundRange(string input, int firstNewCharacterPosition, int lastNewCharacterPosition, int minLength)
+        public static string LongestWordAroundRange(string input, int firstNewCharacterPosition, int lastNewCharacterPosition, int minLength)
         {
             return input
                 .ToUpper()
@@ -76,6 +84,6 @@ namespace LanguageTools
                 .FirstOrDefault();
         }
 
-        public bool isWord(string candidate) => lexicon.Contains(candidate.ToUpper());
+        public static bool isWord(string candidate) => lexicon.Contains(candidate.ToUpper());
     }
 }

@@ -15,7 +15,6 @@
 
 [node name="PlayField" type="CanvasLayer"]
 script = ExtResource( 1 )
-debugWords = false
 PauseScreenScene = ExtResource( 12 )
 
 [node name="BoardGrid" type="ReferenceRect" parent="."]

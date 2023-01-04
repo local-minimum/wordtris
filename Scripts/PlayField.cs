@@ -15,7 +15,6 @@ public class PlayField : CanvasLayer
 
 	public string resource = "res://wordlist.txt";
 
-	private Lexicon lexicon;
 	private VirtualBoard virtualBoard;
 
 	private PlayerWord PlayerWord;
@@ -48,8 +47,11 @@ public class PlayField : CanvasLayer
 		PauseScreen.Visible = false;
 		AddChild(PauseScreen);
 
-		var resourceData = GodotHelpers.LoadTextResource.Load(resource);
-		lexicon = new Lexicon(resourceData, BoardGrid.gridSize);
+		if (!Lexicon.Initizialized)
+        {
+			var resourceData = GodotHelpers.LoadTextResource.Load(resource);
+			Lexicon.Init(resourceData, BoardGrid.gridSize);
+		}
 
 		virtualBoard = new VirtualBoard(BoardGrid.gridSize);
 
@@ -95,7 +97,7 @@ public class PlayField : CanvasLayer
 
 	void SetNextWord()
 	{
-		nextWord = lexicon.RandomGram;
+		nextWord = Lexicon.RandomGram;
 		NextWord.Text = $"NEXT: {nextWord}";
 	}
 
@@ -134,8 +136,8 @@ public class PlayField : CanvasLayer
 			if (debugWords) candidates.Add(candidate);
 
 			var word = isRange ?
-				lexicon.LongestWordAroundRange(candidate, anchor, anchor + range.Count() - 1, minWordLength) :
-				lexicon.LongestWordAround(candidate, anchor, minWordLength);
+				Lexicon.LongestWordAroundRange(candidate, anchor, anchor + range.Count() - 1, minWordLength) :
+				Lexicon.LongestWordAround(candidate, anchor, minWordLength);
 
 			if (String.IsNullOrEmpty(word)) continue;
 
@@ -222,7 +224,7 @@ public class PlayField : CanvasLayer
 		}
 		if (debugWords)
 		{
-			WordList.Text += $"\nCHKS: {String.Join(" ", candidates.Select(candidate => String.Join("", candidate, lexicon.isWord(candidate) ? "*" : "")))}";
+			WordList.Text += $"\nCHKS: {String.Join(" ", candidates.Select(candidate => String.Join("", candidate, Lexicon.isWord(candidate) ? "*" : "")))}";
 		}
 	}
 
