@@ -248,6 +248,15 @@ public class PlayField : CanvasLayer
 			PlayerWord.Paused = paused;
 			return;
         }
+		if (@event.IsActionPressed("Retry"))
+        {
+			var result = GetTree().ReloadCurrentScene();
+			if (result != Error.Ok)
+            {
+				GD.Print("Failed to reload scene");
+            }
+			return;
+        }
 
 		// You may not do game actions while paused
 		if (PauseScreen.Visible) return;
