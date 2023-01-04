@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Godot;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -110,13 +111,12 @@ namespace LanguageTools
             }
         }
 
-        public static List<string> LoadResource(this string resource)
+        public static List<string> LoadAsTextResource(this string resource)
         {
-            string rawContents;
-            using (StreamReader streamReader = new StreamReader(resource, Encoding.UTF8))
-            {
-                rawContents = streamReader.ReadToEnd();
-            }
+            var f = new Godot.File();
+            f.Open(resource, Godot.File.ModeFlags.Read);
+            string rawContents = f.GetAsText();
+
             return rawContents
                 .Split(new string[] { "\n" }, StringSplitOptions.None)
                 .Select(x => x.Trim())

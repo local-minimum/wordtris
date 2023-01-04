@@ -9,7 +9,7 @@ public class PlayField : CanvasLayer
     [Export(PropertyHint.None)]
 	public bool debugWords = true;
 
-	public string resource = "wordlist.txt";
+	public string resource = "res://wordlist.txt";
 
 	private Lexicon lexicon;
 	private VirtualBoard virtualBoard;

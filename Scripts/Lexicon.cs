@@ -30,7 +30,7 @@ namespace LanguageTools
             RNG.Randomize();
 
             var wordList = resource
-                .LoadResource()
+                .LoadAsTextResource()
                 .Where(w => w.Length <= maxLength)
                 .ToList();
 
