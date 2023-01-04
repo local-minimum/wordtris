@@ -1,9 +1,7 @@
-﻿using Godot;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Text;
+
 
 namespace LanguageTools
 {
@@ -111,13 +109,9 @@ namespace LanguageTools
             }
         }
 
-        public static List<string> LoadAsTextResource(this string resource)
+        public static List<string> AsCleanListOfRows(this string resource)
         {
-            var f = new Godot.File();
-            f.Open(resource, Godot.File.ModeFlags.Read);
-            string rawContents = f.GetAsText();
-
-            return rawContents
+            return resource
                 .Split(new string[] { "\n" }, StringSplitOptions.None)
                 .Select(x => x.Trim())
                 .Where(x => x.Length > 0)

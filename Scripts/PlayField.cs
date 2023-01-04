@@ -39,7 +39,8 @@ public class PlayField : CanvasLayer
 		DropProgress = GetNode<DropProgress>("DropProgress");
 		NextWord = GetNode<Label>("NextWord");
 
-		lexicon = new Lexicon(resource, BoardGrid.gridSize);
+		var resourceData = GodotHelpers.LoadTextResource.Load(resource);
+		lexicon = new Lexicon(resourceData, BoardGrid.gridSize);
 
 		virtualBoard = new VirtualBoard(BoardGrid.gridSize);
 

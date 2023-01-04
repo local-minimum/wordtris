@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Godot;
-using LanguageTools;
 
 namespace LanguageTools
 {
@@ -24,13 +23,13 @@ namespace LanguageTools
             }
         }
 
-        public Lexicon(string resource, int maxLength)
+        public Lexicon(string resourceData, int maxLength)
         {
             RNG = new RandomNumberGenerator();
             RNG.Randomize();
 
-            var wordList = resource
-                .LoadAsTextResource()
+            var wordList = resourceData
+                .AsCleanListOfRows()
                 .Where(w => w.Length <= maxLength)
                 .ToList();
 
