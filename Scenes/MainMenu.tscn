@@ -9,6 +9,9 @@
 anchor_right = 1.0
 anchor_bottom = 1.0
 script = ExtResource( 3 )
+__meta__ = {
+"_edit_horizontal_guides_": [ -143.0 ]
+}
 
 [node name="PlayButton" type="Button" parent="."]
 anchor_top = 0.201

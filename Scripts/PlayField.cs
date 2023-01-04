@@ -48,6 +48,10 @@ public class PlayField : CanvasLayer
         {
 			var resourceData = GodotHelpers.LoadTextResource.Load(resource);
 			Lexicon.Init(resourceData, BoardGrid.gridSize);
+			while (Lexicon.Inizializing)
+            {
+				Lexicon.LoadBatch();
+            }
 		}
 
 		virtualBoard = new VirtualBoard(BoardGrid.gridSize);

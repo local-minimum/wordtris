@@ -71,6 +71,15 @@ namespace LanguageTools
             maxWordLength = maxLength;
         }
 
+        private static List<string> LoadWords()
+        {
+            SimpleTimer.Start("Load Words");
+            var words = resourceFile.GetAsText().Split("\n").Select(w => w.Trim()).Where(w => w.Length > 0 && w.Length <= maxWordLength).ToList();
+            lexicon.UnionWith(words);
+            SimpleTimer.Stop("Load Words");
+            return words;
+        }
+
         private static IEnumerator<bool> LoadWordBatch()
         {
             SimpleTimer.Start("Load Words");
@@ -110,6 +119,21 @@ namespace LanguageTools
         private static IEnumerator<bool> wordLoader;
         private static IEnumerator<Dictionary<string, int>> gramMaker;
 
+        public static void LoadAll()
+        {
+            var words = LoadWords();
+
+            SimpleTimer.Start("Load Bigrams");
+            bigrams = new GramBag(words.UnbatchedCreateGrams());
+            SimpleTimer.Stop("Load Bigrams");
+
+            SimpleTimer.Start("Load Trigrams");
+            trigrams = new GramBag(words.UnbatchedCreateGrams(3));
+            SimpleTimer.Stop("Load Trigrams");
+
+            loadingState = LoadingState.Loaded;
+        }
+
         public static bool LoadBatch() {
             if (wordLoader == null)
             {
@@ -127,8 +151,7 @@ namespace LanguageTools
                 InitStatus = "Creating 2-Letter Blocks";
                 if (gramMaker == null)
                 {
-                    var gramDict = new Dictionary<string, int>();
-                    gramMaker = lexicon.CreateGrams(gramDict);
+                    gramMaker = lexicon.CreateGrams();
                 }
                 else if (gramMaker.MoveNext() && gramMaker.Current != null)
                 {
@@ -145,8 +168,7 @@ namespace LanguageTools
                 InitStatus = "Creating 3-Letter Blocks";
                 if (gramMaker == null)
                 {
-                    var gramDict = new Dictionary<string, int>();
-                    gramMaker = lexicon.CreateGrams(gramDict, 3);
+                    gramMaker = lexicon.CreateGrams(3);
                 } else if (gramMaker.MoveNext() && gramMaker.Current != null)
                 {
                     trigrams = new GramBag(gramMaker.Current);

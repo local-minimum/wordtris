@@ -6,7 +6,7 @@ public class MainMenu : Control
 {
     Button PlayButton;
 
-    public string resource = "res://wordlist.txt";
+    public string resource = "res://wordlist7.txt";
 
     
     private void loadLexicon()
@@ -18,6 +18,8 @@ public class MainMenu : Control
             var resourceFile = LoadTextResource.Load(resource);
             Lexicon.Init(resourceFile, 7);
         }
+
+        if (Lexicon.Inizializing) Lexicon.LoadAll();
     }
 
     public override void _Ready()

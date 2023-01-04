@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Godot;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,22 +8,54 @@ namespace LanguageTools
 {
     public static class LanguageExtentions
     {
-        private static int batchSize = 10000;
+        private static int batchSize = 2500;
 
-        public static IEnumerator<Dictionary<string, int>> CreateGrams(this IEnumerable<string> wordList, Dictionary<string, int> grams, int gramSize = 2)
+        public static IEnumerable<string> Substrings(this IEnumerable<string> strings, int segmentSize)
         {
+            foreach (var word in strings)
+            {
+                for (int j = 0, wl = word.Length - segmentSize; j <= wl; j++)
+                {
+                    yield return word.Substring(j, segmentSize);                    
+                }
+            }
+        }
+
+        public static Dictionary<string, int> UnbatchedCreateGrams(this List<string> words, int gramSize = 2)
+        {
+            Dictionary<string, int> grams = new Dictionary<string, int>();
+            if (gramSize < 1) return grams;
+            
+            int nGrams = words
+                .Where(w => w.Length >= gramSize)
+                .Substrings(gramSize)
+                .GroupBy(gram => gram)
+                .Select(gramGroup => {
+                    grams[gramGroup.First()] = gramGroup.Count();
+                    return true;
+                })
+                .Count();
+
+            GD.Print($"{nGrams} grams created of length {gramSize}");
+
+            return grams;
+        }
+
+        public static IEnumerator<Dictionary<string, int>> CreateGrams(this HashSet<string> wordList, int gramSize = 2)
+        {
+            Dictionary<string, int> grams = new Dictionary<string, int>();
+
             if (gramSize < 1) {
                 yield return grams;
                 yield break;
             }
 
-            int batch = 0;
-            foreach (var word in wordList)
+            int batch = 1;
+            foreach(var word in wordList)
             {             
                 batch++;
-                if (batch >= batchSize)
-                {
-                    batch = 0;
+                if (batch % batchSize == 0)
+                {                    
                     yield return null;
                 }
 
@@ -33,13 +66,12 @@ namespace LanguageTools
 
                 for (int j = 0, wl = word.Length - gramSize; j <= wl; j++)
                 {
-                    var gram = word.Substring(j, gramSize);
-                    
-                    if (grams.ContainsKey(gram))
+                    string gram = word.Substring(j, gramSize);
+                    int count;
+                    if (grams.TryGetValue(gram, out count))
                     {
-                        grams[gram]++;
-                    }
-                    else
+                        grams[gram] = count + 1;
+                    } else
                     {
                         grams[gram] = 1;
                     }
