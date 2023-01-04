@@ -1,4 +1,5 @@
 using Godot;
+using GodotHelpers;
 using LanguageTools;
 
 public class MainMenu : Control
@@ -10,10 +11,11 @@ public class MainMenu : Control
     
     private void loadLexicon()
     {
-        if (!Lexicon.Loaded)
+        if (Lexicon.Unloaded)
         {
+            SimpleTimer.Start("Lexicon Load");
             GD.Print($"Loading lexicon from: {resource}");
-            var resourceFile = GodotHelpers.LoadTextResource.Load(resource);
+            var resourceFile = LoadTextResource.Load(resource);
             Lexicon.Init(resourceFile, 7);
         }
     }
@@ -30,8 +32,8 @@ public class MainMenu : Control
     {
         if (Lexicon.Inizializing)
         {
-            GetNode<Label>("LoadingLabel").Text = Lexicon.InitStatus;
             Lexicon.LoadBatch();
+            GetNode<Label>("LoadingLabel").Text = Lexicon.InitStatus;
             return;
         }
 
@@ -41,6 +43,7 @@ public class MainMenu : Control
 
             GetNode<Label>("LoadingLabel").Visible = false;
             GD.Print("Lexicon loaded");
+            SimpleTimer.Stop("Lexicon Load");
         }
     }
 }

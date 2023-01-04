@@ -34,7 +34,7 @@ namespace LanguageTools
                 for (int j = 0, wl = word.Length - gramSize; j <= wl; j++)
                 {
                     var gram = word.Substring(j, gramSize);
-
+                    
                     if (grams.ContainsKey(gram))
                     {
                         grams[gram]++;

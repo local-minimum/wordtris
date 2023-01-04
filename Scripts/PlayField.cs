@@ -6,9 +6,6 @@ using LanguageTools;
 
 public class PlayField : CanvasLayer
 {
-    [Export(PropertyHint.None)]
-	public bool debugWords = true;
-
     [Export(PropertyHint.File)]
 	private PackedScene PauseScreenScene;
 	private PauseScreen PauseScreen;
@@ -133,7 +130,7 @@ public class PlayField : CanvasLayer
 			var anchor = wordCandidate.Key.anchor;
 			var isRange = wordCandidate.Value;
 
-			if (debugWords) candidates.Add(candidate);
+			if (OS.IsDebugBuild()) candidates.Add(candidate);
 
 			var word = isRange ?
 				Lexicon.LongestWordAroundRange(candidate, anchor, anchor + range.Count() - 1, minWordLength) :
@@ -222,7 +219,7 @@ public class PlayField : CanvasLayer
 		{
 			WordList.Text += $"\nMultiplier: x{multiplier}!";
 		}
-		if (debugWords)
+		if (OS.IsDebugBuild())
 		{
 			GD.Print($"--- Bonus {bonus} Multiplier {multiplier} RoundScore {roundScore} ---");
 			GD.Print("# WORDS");

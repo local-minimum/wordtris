@@ -7,10 +7,7 @@ namespace LanguageTools
 {
     static class Lexicon
     {
-        public class InitializationException : System.Exception
-        {
-
-        }
+        public class InitializationException : System.Exception {}
 
         public static string InitStatus { get; private set; }
 
@@ -25,6 +22,14 @@ namespace LanguageTools
 
         static private RandomNumberGenerator RNG;
         static private LoadingState loadingState = LoadingState.Unloaded;
+
+        public static bool Unloaded
+        {
+            get
+            {
+                return loadingState == LoadingState.Unloaded;
+            }
+        }
 
         public static bool Inizializing
         {
@@ -70,31 +75,35 @@ namespace LanguageTools
         {
             SimpleTimer.Start("Load Words");
             InitStatus = "Reading in words";
-            var rawWords = resourceFile.GetAsText();
+            int batchSize = 20000;
+            int i = 0;
+            var wordList = new List<string>();
+            while (!resourceFile.EofReached())
+            {
+                var line = resourceFile
+                    .GetLine()
+                    .Trim();
+
+                i++;
+                if (i >= batchSize) {
+                    i = 0;
+                    SimpleTimer.Stop("Load Words");
+                    yield return true;
+                    SimpleTimer.Start("Load Words");
+                }
+
+                if (line.Length == 0 || line.Length > maxWordLength) continue;
+                wordList.Add(line);
+            }
             resourceFile.Close();
             resourceFile = null;
             SimpleTimer.Stop("Load Words");
             yield return true;
 
-            SimpleTimer.Start("Parse Words");
-            InitStatus = "Parsing words";
-            var wordList = rawWords
-                .AsCleanListOfRows();
-            rawWords = null;
-            SimpleTimer.Stop("Parse Words");
-            yield return true;
-
-            SimpleTimer.Start("Filter Words");
-            InitStatus = "Validating words";
-            wordList = wordList
-                .Where(w => w.Length <= maxWordLength && w.Length > 0)
-                .ToList();
-            SimpleTimer.Stop("Filter Words");
-            yield return true;
-
             SimpleTimer.Start("Store Words");
             InitStatus = "Storing words";
             lexicon.UnionWith(wordList);
+            wordList = null;
             SimpleTimer.Start("Store Words");
         }
 
@@ -111,7 +120,9 @@ namespace LanguageTools
                 return false;
             }
             else if (bigrams == null)
-            {                
+            {   
+                wordLoader.Dispose();
+
                 SimpleTimer.Start("Load Bigrams");
                 InitStatus = "Creating 2-Letter Blocks";
                 if (gramMaker == null)
@@ -122,6 +133,7 @@ namespace LanguageTools
                 else if (gramMaker.MoveNext() && gramMaker.Current != null)
                 {
                     bigrams = new GramBag(gramMaker.Current);
+                    gramMaker.Dispose();
                     gramMaker = null;
                 }
                 SimpleTimer.Stop("Load Bigrams");
