@@ -212,7 +212,7 @@ public class PlayField : CanvasLayer
 
 	private void UpdateWordList(List<string> words, int roundScore, List<string> candidates, int bonus, int multiplier)
     {		
-		var scoredWords = words.OrderBy(w => -w.Length).Select(w => $"{ScoreWord(w.Length)}:\u00A0{w}");
+		var scoredWords = words.OrderBy(w => -w.Length).Select(w => $"{ScoreWord(w.Length)}:\u00A0{w}").ToList();
 		WordList.Text = $"{String.Join(", ", scoredWords)}";
 		if (bonus > 0)
 		{
@@ -224,7 +224,19 @@ public class PlayField : CanvasLayer
 		}
 		if (debugWords)
 		{
-			WordList.Text += $"\nCHKS: {String.Join(" ", candidates.Select(candidate => String.Join("", candidate, Lexicon.isWord(candidate) ? "*" : "")))}";
+			GD.Print($"--- Bonus {bonus} Multiplier {multiplier} RoundScore {roundScore} ---");
+			GD.Print("# WORDS");
+			for (int i = 0; i < scoredWords.Count; i++)
+            {
+                GD.Print($"{scoredWords[i]}");
+			}
+			GD.Print("# CANDIDATES");
+			for (int i = 0; i < candidates.Count; i++)
+            {
+				var candidate = candidates[i];
+				var isWord = Lexicon.isWord(candidate) ? "*" : "";
+				GD.Print($"{candidate}{isWord}");
+            }
 		}
 	}
 
@@ -241,24 +253,24 @@ public class PlayField : CanvasLayer
     {
 		if (!playing) return;
 
-		// Handle pause toggle
-		if (@event.IsActionPressed("Pause"))
+		// Handle pause toggle and retry game
+		var retryStarted = @event.IsActionPressed("Retry");
+		var retryEnded = @event.IsActionReleased("Retry");
+
+		if (@event.IsActionPressed("Pause") || retryStarted || retryEnded)
         {
-			var paused = !PauseScreen.Visible;
+			var paused = !PauseScreen.Visible || retryStarted;
 			Timer.Paused = paused;
+
 			PauseScreen.Visible = paused;
+			if (retryStarted) PauseScreen.RetryInitiated();
+			if (retryEnded) PauseScreen.RetryEnded();
+
 			PlayerWord.Paused = paused;
 			return;
         }
-		if (@event.IsActionPressed("Retry"))
-        {
-			var result = GetTree().ReloadCurrentScene();
-			if (result != Error.Ok)
-            {
-				GD.Print("Failed to reload scene");
-            }
-			return;
-        }
+
+		
 
 		// You may not do game actions while paused
 		if (PauseScreen.Visible) return;
