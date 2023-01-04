@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 public class PlayerWord : Node
 {
+    public bool Paused { get; set; }
     private string word;
 
     public string Word {
@@ -66,6 +67,8 @@ public class PlayerWord : Node
 
     public override void _Input(InputEvent @event)
     {
+        if (Paused) return;
+
         if (@event.IsActionPressed("Up"))
         {
             anchor += Coordinates2D.Up;

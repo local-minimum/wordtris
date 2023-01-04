@@ -9,6 +9,10 @@ public class PlayField : CanvasLayer
     [Export(PropertyHint.None)]
 	public bool debugWords = true;
 
+    [Export(PropertyHint.File)]
+	private PackedScene PauseScreenScene;
+	private PauseScreen PauseScreen;
+
 	public string resource = "res://wordlist.txt";
 
 	private Lexicon lexicon;
@@ -21,6 +25,7 @@ public class PlayField : CanvasLayer
 	private AutodropTimer Timer;
 	private DropProgress DropProgress;
 	private Label NextWord;
+	
 
 	int minWordLength = 3;
 	int score = 0;
@@ -39,6 +44,10 @@ public class PlayField : CanvasLayer
 		DropProgress = GetNode<DropProgress>("DropProgress");
 		NextWord = GetNode<Label>("NextWord");
 
+		PauseScreen = PauseScreenScene.Instance<PauseScreen>();
+		PauseScreen.Visible = false;
+		AddChild(PauseScreen);
+
 		var resourceData = GodotHelpers.LoadTextResource.Load(resource);
 		lexicon = new Lexicon(resourceData, BoardGrid.gridSize);
 
@@ -48,8 +57,6 @@ public class PlayField : CanvasLayer
 		Timer.BetweenWordsTimer(false);
 
 		DropProgress.Init(Timer);
-
-		//Message.Text = lexicon.Size.ToString();
 	}
 
 
@@ -71,11 +78,17 @@ public class PlayField : CanvasLayer
 		}
 		catch (LetterCollisionException)
 		{
-			PlayerWord.Word = "";
-			WordList.Text = "GAME OVER!";
-			playing = false;
-			DropProgress.GameOver();
+			GameOver();
 		}
+	}
+
+	private void GameOver()
+    {
+		PlayerWord.Word = "";
+		WordList.Text = "GAME OVER!";
+		playing = false;
+		DropProgress.GameOver();
+		GD.Print($"Game over: {score} pts");
 	}
 
 	private string nextWord;
@@ -224,8 +237,25 @@ public class PlayField : CanvasLayer
 
 	public override void _Input(InputEvent @event)
     {
-		if (!playing || Timer.isBetween) return;
+		if (!playing) return;
 
+		// Handle pause toggle
+		if (@event.IsActionPressed("Pause"))
+        {
+			var paused = !PauseScreen.Visible;
+			Timer.Paused = paused;
+			PauseScreen.Visible = paused;
+			PlayerWord.Paused = paused;
+			return;
+        }
+
+		// You may not do game actions while paused
+		if (PauseScreen.Visible) return;
+
+		// You may not drop inbetween drops
+		if (Timer.isBetween) return;
+
+		// Handle game running actions
         if (@event.IsActionPressed("Drop"))
         {
 			try
